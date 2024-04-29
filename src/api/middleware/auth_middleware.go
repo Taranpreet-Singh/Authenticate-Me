@@ -14,7 +14,7 @@ func AuthenticateUser(c *gin.Context) {
 
 func ValidateUserBody() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Get email and pass from request body
+		//* Get email and pass from request body
 		var body models.UserRequestBody
 		if c.Bind(&body) != nil {
 			c.JSON(http.StatusBadRequest, gin.H{

@@ -2,7 +2,7 @@ package api
 
 import (
 	"authenticate-me/src/models"
-	"authenticate-me/src/services"
+	"authenticate-me/src/service"
 	"authenticate-me/src/utils/constants"
 	"net/http"
 
@@ -11,12 +11,12 @@ import (
 
 func Initial(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"messaage": "Works fine",
+		"messaage": "Application is running!!",
 	})
 }
 
 func RegisterUser(c *gin.Context) {
-	// Get request body passed from middleware
+	//* Get request body passed from middleware
 	body, exists := c.Get("requestBody")
 	if !exists {
 		c.JSON(http.StatusInternalServerError, gin.H{constants.Error: constants.ErrUserNotFound.Error()})
@@ -24,8 +24,8 @@ func RegisterUser(c *gin.Context) {
 	}
 	requestBody := body.(models.UserRequestBody)
 
-	// Register user
-	user, customErr := services.RegisterUser(&requestBody)
+	//* Register user
+	user, customErr := service.RegisterUser(&requestBody)
 	if customErr != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{customErr.ErrorType: customErr.Error.Error()})
 		return
@@ -35,7 +35,7 @@ func RegisterUser(c *gin.Context) {
 }
 
 func LoginUser(c *gin.Context) {
-	// Get request body passed from middleware
+	//* Get request body passed from middleware
 	body, exists := c.Get("requestBody")
 	if !exists {
 		c.JSON(http.StatusInternalServerError, gin.H{constants.Error: constants.ErrUserNotFound.Error()})
@@ -43,31 +43,12 @@ func LoginUser(c *gin.Context) {
 	}
 	requestBody := body.(models.UserRequestBody)
 
-	// Login user
-	user, customErr := services.LoginUser(&requestBody)
+	//* Login user
+	token, customErr := service.LoginUser(&requestBody)
 	if customErr != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{customErr.ErrorType: customErr.Error.Error()})
 		return
 	}
 
-	c.JSON(http.StatusAccepted, gin.H{
-		constants.Success: constants.LoginSuccess,
-		constants.User:    user,
-	})
-}
-
-func LogoutUser(c *gin.Context) {
-
-}
-
-func RequestResetPassword(c *gin.Context) {
-
-}
-
-func ConfirmResetPassword(c *gin.Context) {
-
-}
-
-func RefreshToken(c *gin.Context) {
-
+	c.JSON(http.StatusAccepted, token)
 }
